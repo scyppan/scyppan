@@ -1,6 +1,6 @@
 {
   "name": "scyppan",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "A set of easy-to-understand tools to simplify some basic repetitive coding tasks",
   "main": "index.js",
   "scripts": {

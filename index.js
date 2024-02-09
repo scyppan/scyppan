@@ -18,4 +18,4 @@ function returninrange(lo, hi, val){
     link.click();
   }
 
-  module.export = randbetween, returninrange, downloadtxt;
+  export {randbetween, returninrange, downloadtxt};
