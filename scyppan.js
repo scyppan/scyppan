@@ -39,32 +39,22 @@ function returninrange(lo, hi, val){
     return !array.includes(id);
   }
 
-  function readtxtfile(file) {
-    // Return a new promise
+  function readtxtfile(text) {
     return new Promise((resolve, reject) => {
-      // Check if the file is provided
-      if (!file) {
-        reject("No file selected.");
+      // Check if the text is provided
+      if (!text) {
+        reject("No text content provided.");
         return;
       }
   
-      const reader = new FileReader();
-  
-      // On file load, resolve the promise with the result
-      reader.onload = function(e) {
-        const text = e.target.result;
+      try {
         const result = parseTabDelimitedText(text);
         resolve(result); // Resolve the promise with the parsed result
-      };
-  
-      // On error, reject the promise
-      reader.onerror = function() {
-        reject("Could not read the file.");
-      };
-  
-      reader.readAsText(file, 'UTF-8'); // Explicitly specifying UTF-8 encoding
+      } catch (error) {
+        reject("Could not parse the text content.");
+      }
     });
-  }
+  }  
   
   function parseTabDelimitedText(text) {
     const lines = text.split('\n');
@@ -102,3 +92,19 @@ function returninrange(lo, hi, val){
   
     return obj; // Return the modified object with values as integers where possible
   }
+  
+  async function fetchfile(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error('Network response issue');
+        }
+        const buffer = await response.arrayBuffer(); // Fetch the data as ArrayBuffer
+        const decoder = new TextDecoder('utf-16le'); // Assuming the data is UTF-16LE encoded; adjust if necessary
+        const text = decoder.decode(buffer);
+        return text; // Return the decoded text
+    } catch (error) {
+        console.error('There was a problem with your fetch operation:', error);
+        return null; // Return null or appropriate error handling
+    }
+}
