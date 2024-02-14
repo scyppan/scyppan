@@ -48,7 +48,7 @@ function returninrange(lo, hi, val){
       }
   
       try {
-        const result = parseTabDelimitedText(text);
+        const result = parsetabdelimitedtext(text);
         resolve(result); // Resolve the promise with the parsed result
       } catch (error) {
         reject("Could not parse the text content.");
@@ -56,18 +56,19 @@ function returninrange(lo, hi, val){
     });
   }  
   
-  function parseTabDelimitedText(text) {
+  function parsetabdelimitedtext(text) {
     const lines = text.split('\n');
-    const columnNames = lines[0].split('\t').map(name => name.trim().replace(/^"|"$/g, ''));
+    const columnNames = lines[0].split('\t').map(name => name.trim().replace(/^"|"$/g, '')); // Clean column names
     let result = [];
 
     for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split('\t').map(value => value.trim().replace(/^"|"$/g, ''));
+        const values = lines[i].split('\t').map(value => value.trim().replace(/^"|"$/g, '')); // Clean values
         if (values.length === columnNames.length) {
             let obj = {};
             columnNames.forEach((col, index) => {
                 obj[col] = values[index];
             });
+            obj = tryparseallvalsasint(obj); // Convert all string values to integers where possible
             result.push(obj);
         }
     }
