@@ -40,41 +40,51 @@ function returninrange(lo, hi, val){
   }
 
   function readtxtfile(file) {
-    
-    // Fetch the file from the input
-    if (!file) {
-      console.log("No file selected.");
-      return;
-    }
+    // Return a new promise
+    return new Promise((resolve, reject) => {
+      // Check if the file is provided
+      if (!file) {
+        reject("No file selected.");
+        return;
+      }
   
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const text = e.target.result;
-      const result = parseTabDelimitedText(text);
-      console.log(result); // Here you have your object, parsed as UTF-8
-    };
-    reader.readAsText(file, 'UTF-8'); // Explicitly specifying UTF-8 encoding
+      const reader = new FileReader();
+  
+      // On file load, resolve the promise with the result
+      reader.onload = function(e) {
+        const text = e.target.result;
+        const result = parseTabDelimitedText(text);
+        resolve(result); // Resolve the promise with the parsed result
+      };
+  
+      // On error, reject the promise
+      reader.onerror = function() {
+        reject("Could not read the file.");
+      };
+  
+      reader.readAsText(file, 'UTF-8'); // Explicitly specifying UTF-8 encoding
+    });
   }
   
   function parseTabDelimitedText(text) {
     const lines = text.split('\n');
-    const columnNames = lines[0].split('\t');
+    const columnNames = lines[0].split('\t').map(name => name.trim().replace(/^"|"$/g, ''));
     let result = [];
-  
-    for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split('\t');
-      if (values.length === columnNames.length) {
-        let obj = {};
-        columnNames.forEach((col, index) => {
-          obj[col] = values[index];
-        });
-        result.push(obj);
-      }
-    }
-  
-    return result;
-  }
 
+    for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split('\t').map(value => value.trim().replace(/^"|"$/g, ''));
+        if (values.length === columnNames.length) {
+            let obj = {};
+            columnNames.forEach((col, index) => {
+                obj[col] = values[index];
+            });
+            result.push(obj);
+        }
+    }
+
+    return result;
+}
+  
   function tryparseallvalsasint(obj) {
     // Iterate over each key-value pair in the object
     for (let key in obj) {
