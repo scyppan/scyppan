@@ -94,14 +94,14 @@ function returninrange(lo, hi, val){
     return obj; // Return the modified object with values as integers where possible
   }
   
-  async function fetchfile(url) {
+  async function fetchfile(url, encoding) {
     try {
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error('Network response issue');
         }
         const buffer = await response.arrayBuffer(); // Fetch the data as ArrayBuffer
-        const decoder = new TextDecoder('utf-16le'); // Assuming the data is UTF-16LE encoded; adjust if necessary
+        const decoder = new TextDecoder(encoding); // Assuming the data is UTF-16LE encoded; adjust if necessary
         const text = decoder.decode(buffer);
         return text; // Return the decoded text
     } catch (error) {
