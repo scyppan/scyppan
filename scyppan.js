@@ -39,7 +39,30 @@ function returninrange(lo, hi, val){
     return !array.includes(id);
   }
 
-  function readtxtfile(text) {
+  async function filereader(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+  
+      reader.onload = async (e) => {
+        try {
+          const result = await readtxtfile(e.target.result);
+          resolve(result);
+        } catch (error) {
+          console.error("Error parsing file:", error);
+          reject(error); // Reject the promise if parsing fails
+        }
+      };
+  
+      reader.onerror = (error) => {
+        console.error("Error reading file:", error);
+        reject(error); // Reject the promise if reading fails
+      };
+  
+      reader.readAsText(file); // Initiates reading the file's text
+    });
+}
+
+function readtxtfile(text) {
     return new Promise((resolve, reject) => {
       // Check if the text is provided
       if (!text) {
@@ -109,3 +132,15 @@ function returninrange(lo, hi, val){
         return null; // Return null or appropriate error handling
     }
 }
+
+function getdollars(value) {
+  let num = parseFloat(value);
+  if (isNaN(num) || !isFinite(num)) {
+    // Return the original value if parsing fails or results in an infinite/NaN value
+    return value;
+  } else {
+    // Return the formatted string with two decimal places prefixed by a dollar sign
+    return `$${num.toFixed(2)}`;
+  }
+}
+
