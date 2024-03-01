@@ -148,3 +148,19 @@ function getdollars(value) {
   }
 }
 
+function calculateage(birthdate, referenceDate) {
+  // Parse the birthdate and referenceDate from string to Date objects
+  let birth = new Date(birthdate);
+  let reference = new Date(referenceDate);
+
+  // Calculate the difference in years
+  let age = reference.getFullYear() - birth.getFullYear();
+
+  // Adjust the age if the reference date is before the birth date
+  if (reference.getMonth() < birth.getMonth() || 
+      (reference.getMonth() === birth.getMonth() && reference.getDate() < birth.getDate())) {
+      age--;
+  }
+
+  return age;
+}
