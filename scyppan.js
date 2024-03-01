@@ -39,7 +39,7 @@ function returninrange(lo, hi, val){
     return !array.includes(id);
   }
 
-  async function filereader(file) {
+async function filereader(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
   
@@ -91,7 +91,7 @@ function readtxtfile(text) {
             columnNames.forEach((col, index) => {
                 obj[col] = values[index];
             });
-            obj = tryparseallvalsasint(obj); // Convert all string values to integers where possible
+            obj = tryparseallvals(obj); // Convert all string values to integers where possible
             result.push(obj);
         }
     }
@@ -99,23 +99,27 @@ function readtxtfile(text) {
     return result;
 }
   
-  function tryparseallvalsasint(obj) {
-    // Iterate over each key-value pair in the object
-    for (let key in obj) {
+function tryparseallvals(obj) {
+  for (let key in obj) {
       if (obj.hasOwnProperty(key)) {
-        const value = obj[key];
-        const parsedValue = parseInt(value, 10);
-  
-        // Check if the parsedValue is an integer and not NaN
-        if (!isNaN(parsedValue)) {
-          obj[key] = parsedValue; // Assign the parsed integer back to the object
-        }
-        // If parsing fails or value is NaN, the original string remains unchanged
+          const value = obj[key];
+
+          // Attempt to detect and parse date
+          if (/^\d{4}-\d{2}-\d{2}$/.test(value) && !isNaN(Date.parse(value))) {
+              obj[key] = new Date(value);
+          } else {
+              // Attempt to parse as integer
+              const parsedValue = parseInt(value, 10);
+              if (!isNaN(parsedValue)) {
+                  obj[key] = parsedValue; // Assign the parsed integer back to the object
+              }
+              // If parsing fails, the original string remains unchanged
+          }
       }
-    }
-  
-    return obj; // Return the modified object with values as integers where possible
   }
+  return obj; // Return the modified object
+}
+
   
   async function fetchfile(url, encoding) {
     try {
