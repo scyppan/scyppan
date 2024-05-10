@@ -119,8 +119,6 @@ function tryparseallvals(obj) {
   return obj; // Return the modified object with dates as strings and numbers parsed where possible
 }
 
-
-
 async function fetchfile(url, encoding) {
   try {
       const response = await fetch(url);
@@ -163,4 +161,46 @@ if (reference.getMonth() < birth.getMonth() ||
 }
 
 return age;
+}
+
+function downloadjson(prj, filename){
+  let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(prj));
+  let downloadAnchorNode = document.createElement('a');
+  downloadAnchorNode.setAttribute("href", dataStr);
+  downloadAnchorNode.setAttribute("download", filename);
+  document.body.appendChild(downloadAnchorNode); // Firefox requires the element to be in the DOM to initiate download
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+}
+
+function readjson(file) {
+  if (file instanceof File) {
+      const reader = new FileReader();
+
+      // Promise wrapper to handle asynchronous reading
+      return new Promise((resolve, reject) => {
+          reader.onload = (event) => {
+              try {
+                  const obj = JSON.parse(event.target.result); // Parses the file content to JSON
+                  resolve(obj);
+              } catch (error) {
+                  reject('Parsing error: ' + error.message);
+              }
+          };
+
+          reader.onerror = (event) => {
+              reject('File reading error: ' + event.target.error.message);
+          };
+
+          reader.readAsText(file); // Reads the file content as text (assumes UTF-8 encoding)
+      });
+  } else {
+      throw new Error('Invalid input type: input must be a File object.');
+  }
+}
+
+function downloadproject(prj, filenamestem){
+  const now = new Date();
+  const datetimeString = `${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}-${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now.getSeconds().toString().padStart(2, '0')}`;
+  downloadjson(prj, filenamestem +"-" + dateTimeString + "-autosave.json");
 }
